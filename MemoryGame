@@ -1,0 +1,236 @@
+#include<iostream>
+#include<stdlib.h>
+#include<unistd.h>
+
+using namespace std;
+int n;
+class Game
+{
+	public:
+		int a[4][4];
+	char b[4][4];
+	int counter[8];
+	int k=0;
+	int con=1;
+	int t1;
+	int t2;
+	int e1,e2,p1,p2,p3,p4;
+	int win=0;
+	char t;
+	
+	public:
+		
+		Game()
+		{
+			system("clear");
+			cout<<"\t \t \t MEMORY GAME";
+			cout<<"\n \n \n";
+			cout<<"\t\tthese are the cards placed upside down";
+			cout<<"\n \n";
+			for(int i=0;i<4;i++)
+			{	
+				cout<<"\t \t \t";
+				for(int j=0;j<4;j++)
+				{
+					cout<<k<<" ";
+					k++;
+				}
+				cout<<endl;
+			}
+			cout<<"\n \n";
+			cout<<"\t\tpress enter to flip the cards";
+			t = cin.get();
+			system("clear");
+		}
+		void assign();
+		void fdisplay();
+		void play();
+};
+void Game:: assign()
+{
+	int pow=1;
+	for(int i=0; i<n; i++)
+	{
+		pow=pow*2;
+	}
+	
+	
+	for (int i=0;i<(n*2);i++)
+		{
+			counter[i]=0;
+		}
+		srand (time(NULL));
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				a[i][j]=rand() % (pow/2);//randomly assigns each element of array a number between 0 to 7
+				
+				if(counter[a[i][j]]<2)//so that not more that 2 cards have the same value
+				{
+					counter[a[i][j]]++;	
+					if(a[i][j]==0)
+						b[i][j]='@';
+					else if(a[i][j]==1)
+						b[i][j]='!';
+					else if(a[i][j]==2)
+						b[i][j]='$';
+					else if(a[i][j]==3)
+						b[i][j]='%';
+					else if(a[i][j]==4)
+						b[i][j]='#';
+					else if(a[i][j]==5)
+						b[i][j]='*';
+					else if(a[i][j]==6)
+						b[i][j]='^';
+					else		
+						b[i][j]='+';
+				}
+				else//if three cards get assigned the same digit then loop will run again for that j
+				{
+					j--;
+				}
+			}
+		}
+}
+void Game:: fdisplay()
+{
+	cout<<"\n \n \n \n";
+		//displaying the cards face up with the symbols
+		for(int i=0;i<n;i++)
+		{	
+			cout<<"\t \t \t";
+			for(int j=0;j<n ;j++)
+			{
+				cout<<b[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+}
+
+void Game::play()
+{
+	while(con==1)
+	{
+		usleep(3000000);
+		system("clear");
+		int test[n][n];
+		k=0;
+		cout<<"\n \n \n \n";
+		for(int i=0;i<n;i++)
+		{	
+			cout<<"\t \t \t";
+			for(int j=0;j<n;j++)
+			{
+				if(b[i][j]==' ')
+					cout<<" ";
+				else				
+					cout<<k<<" ";
+				test[i][j]=k;
+				k++;
+			}
+			cout<<endl;
+		}
+label:		cout<<"\n \nselect two cards \n";
+	try{
+		cin>>t1;//card 1
+		cin>>t2;//card 2
+		if(t1>((n*n)-1) || t1<0)
+			throw(t1);
+		if(t2>((n*n)-1) || t2<0)
+			throw(t2);
+	}
+	catch(int)
+	{
+		cout<<"Invalid Input"<<endl;
+		goto label;
+	}
+		system("clear");
+		for(int i=0;i<n;i++)
+		{	
+			for(int j=0;j<n;j++)
+			{
+				if(t1==test[i][j])
+				{
+					e1=a[i][j];
+					p1=i;
+					p2=j;
+				}
+				if(t2==test[i][j])
+				{
+					e2=a[i][j];
+					p3=i;
+					p4=j;
+				}
+			}
+		}
+		int match=0;
+		if(e1==e2)//checking if they match
+		{
+			match=1;
+		}
+		cout<<"\n \n \n \n";
+		for(int i=0;i<n;i++)
+		{	
+			cout<<"\t \t \t";
+			for(int j=0;j<n;j++)
+			{	
+				if(match==1)
+				{
+					if((i==p1&&j==p2)||(i==p3&&j==p4))	
+					{
+						b[i][j]=' ';
+					}					
+					cout<<b[i][j]<<" ";
+				}
+				else//if they don't match then while gets terminated
+				{
+					con=0;
+				}
+			}
+			cout<<endl;
+		}
+		if(con==0)//as the user lost
+		{
+			system("clear");		
+			cout<<"you failed"<<endl;
+		}
+		win=0;
+		for(int i=0;i<n;i++)//checking if all the cards have been matched
+		{	
+			for(int j=0;j<n;j++)
+			{
+				if(b[i][j]==' ')
+					win=win+1;
+			}
+		}
+		if(win==(n*n))//for win=16 all cards will be matched that is the array will be empty
+		{
+			system("clear");
+			cout<<"you won"<<endl;
+			con=0;
+		}
+	}
+}
+
+		
+	
+	
+int main()
+{
+	int x;
+	cout<<"1. Easy"<<endl;
+	cout<<"2. Difficult"<<endl;
+	cout<<"Enter Choice"<<endl;
+	cin>>x;
+	if(x==1)
+		n=2;
+	else if (x==2)
+		n=4;
+	else
+		cout<<"Invalid Input"<<endl;
+	Game g;
+	g.assign();
+	g.fdisplay();
+	g.play();
+}
